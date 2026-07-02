@@ -1,0 +1,355 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tradecraft.dev/agent-runtime/v1/resolved-agent-spec.schema.json",
+  "title": "Resolved Agent Specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "agent_spec_id",
+    "version",
+    "resolved_at",
+    "role",
+    "objective",
+    "capabilities",
+    "context_package_ref",
+    "workspace",
+    "policies",
+    "completion_contract",
+    "integrity"
+  ],
+  "properties": {
+    "agent_spec_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "resolved_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "template_ref": {
+      "$ref": "common.schema.json#/$defs/uri"
+    },
+    "role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "success_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "$ref": "common.schema.json#/$defs/capability_requirements"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/skill_grant"
+      }
+    },
+    "mcps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mcp_grant"
+      }
+    },
+    "context_package_ref": {
+      "$ref": "common.schema.json#/$defs/uri"
+    },
+    "workspace": {
+      "$ref": "#/$defs/workspace_spec"
+    },
+    "policies": {
+      "$ref": "#/$defs/policy_set"
+    },
+    "completion_contract": {
+      "$ref": "#/$defs/completion_contract"
+    },
+    "runtime_requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowed_adapter_kinds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "allowed_deployment_modes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "required_adapter_capabilities": {
+          "$ref": "common.schema.json#/$defs/capability_requirements"
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "digest"
+      ],
+      "properties": {
+        "digest": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        },
+        "signature_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        }
+      }
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "$defs": {
+    "skill_grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "integrity_digest": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "mcp_grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "permissions"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "configuration_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        }
+      }
+    },
+    "workspace_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "isolation",
+        "write_policy"
+      ],
+      "properties": {
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "repository",
+            "revision"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "git",
+                "snapshot",
+                "existing"
+              ]
+            },
+            "repository": {
+              "type": "string",
+              "minLength": 1
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "isolation": {
+          "type": "string",
+          "enum": [
+            "existing_worktree",
+            "worktree",
+            "local_process",
+            "container",
+            "remote_runtime"
+          ]
+        },
+        "write_policy": {
+          "type": "string",
+          "enum": [
+            "read_only",
+            "read_write"
+          ]
+        },
+        "allowed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "policy_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "network",
+        "destructive_actions",
+        "secret_access"
+      ],
+      "properties": {
+        "network": {
+          "type": "string",
+          "enum": [
+            "disabled",
+            "restricted",
+            "allowed"
+          ]
+        },
+        "destructive_actions": {
+          "type": "string",
+          "enum": [
+            "prohibited",
+            "require_approval",
+            "allowed"
+          ]
+        },
+        "secret_access": {
+          "type": "string",
+          "enum": [
+            "none",
+            "explicit",
+            "managed"
+          ]
+        },
+        "policy_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/uri"
+          }
+        }
+      }
+    },
+    "completion_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accepted_outcome_kinds",
+        "required_outputs"
+      ],
+      "properties": {
+        "accepted_outcome_kinds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "completed_with_warnings",
+              "partial",
+              "blocked",
+              "needs_input",
+              "needs_human_review",
+              "needs_authorization",
+              "needs_additional_capability",
+              "retryable_failure",
+              "non_retryable_failure",
+              "invalid_task",
+              "unsafe_to_continue",
+              "cancelled",
+              "timed_out",
+              "superseded"
+            ]
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "required_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "required_artifact_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "required_evidence_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "output_schema_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/uri"
+          }
+        },
+        "minimum_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "validation_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "residual_risk_required": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    }
+  }
+}

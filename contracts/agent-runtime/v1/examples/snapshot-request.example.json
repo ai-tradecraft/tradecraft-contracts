@@ -1,0 +1,27 @@
+{
+  "document_type": "snapshot_request",
+  "request_id": "snapshot_request_42",
+  "target": {
+    "controller_id": "controller_local_1",
+    "runtime_id": "runtime_123",
+    "agent_session_id": "session_456",
+    "invocation_id": "inv_913"
+  },
+  "purpose": "checkpoint_candidate",
+  "requested_by": "agent",
+  "requested_by_ref": "agent-session://session_456",
+  "reason": "Implementation is complete and local verification passes.",
+  "milestone": "implementation_complete",
+  "include": [
+    "workspace",
+    "git_state",
+    "agent_session",
+    "transcript",
+    "plan",
+    "artifacts",
+    "side_effect_journal",
+    "restore_recipe"
+  ],
+  "checkpoint_candidate": true,
+  "requested_at": "2026-07-01T01:20:00Z"
+}

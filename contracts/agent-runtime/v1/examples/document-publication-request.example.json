@@ -1,0 +1,27 @@
+{
+  "document_type": "document_publication_request",
+  "publication_id": "publication_91",
+  "source": {
+    "workspace_path": "docs/architecture.md"
+  },
+  "logical_path": "design/architecture.md",
+  "title": "Runtime Architecture",
+  "media_type": "text/markdown",
+  "version_intent": "minor",
+  "expected_version": "1.2.0",
+  "idempotency_key": "inv_913:publish:architecture",
+  "target": {
+    "controller_id": "controller_local_1",
+    "runtime_id": "runtime_123",
+    "agent_session_id": "session_456",
+    "invocation_id": "inv_913"
+  },
+  "correlation": {
+    "correlation_id": "corr_123",
+    "run_id": "run_123",
+    "branch_id": "main",
+    "step_id": "implement",
+    "attempt_id": "attempt_3",
+    "invocation_id": "inv_913"
+  }
+}

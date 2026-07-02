@@ -1,0 +1,892 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tradecraft.dev/agent-runtime/v1/runtime-adapter-message.schema.json",
+  "title": "Lamplighter Controller To Agent Runtime Adapter Protocol Message",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/adapter_descriptor"
+    },
+    {
+      "$ref": "#/$defs/resolved_runtime_spec"
+    },
+    {
+      "$ref": "#/$defs/adapter_operation"
+    },
+    {
+      "$ref": "#/$defs/adapter_operation_result"
+    },
+    {
+      "$ref": "#/$defs/adapter_event"
+    }
+  ],
+  "$defs": {
+    "adapter_descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "adapter_kind",
+        "adapter_version",
+        "deployment_modes",
+        "capabilities",
+        "limits",
+        "config_schema"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "adapter.descriptor"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "adapter_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adapter_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "deployment_modes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "capabilities": {
+          "$ref": "#/$defs/adapter_capabilities"
+        },
+        "limits": {
+          "$ref": "#/$defs/adapter_limits"
+        },
+        "config_schema": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "package": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "package_ref",
+            "digest"
+          ],
+          "properties": {
+            "package_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            },
+            "digest": {
+              "$ref": "common.schema.json#/$defs/sha256"
+            },
+            "signature_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            },
+            "trust_policy_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            }
+          }
+        },
+        "composition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "backend",
+            "execution_environment"
+          ],
+          "properties": {
+            "backend": {
+              "$ref": "#/$defs/adapter_component"
+            },
+            "execution_environment": {
+              "$ref": "#/$defs/adapter_component"
+            }
+          }
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "adapter_component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "adapter_capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "persistent_runtime",
+        "persistent_sessions",
+        "concurrent_sessions",
+        "streaming_output",
+        "synchronous_interaction",
+        "agent_initiated_interaction",
+        "pause_resume",
+        "snapshot_capture",
+        "agent_suggested_snapshots",
+        "exact_snapshot_restore",
+        "reconstructed_restore",
+        "snapshot_consistency_modes",
+        "snapshot_transfer_profiles",
+        "document_publication_source",
+        "artifact_collection",
+        "transcript_read",
+        "transcript_source_ids"
+      ],
+      "properties": {
+        "persistent_runtime": {
+          "type": "boolean"
+        },
+        "persistent_sessions": {
+          "type": "boolean"
+        },
+        "concurrent_sessions": {
+          "type": "boolean"
+        },
+        "streaming_output": {
+          "type": "boolean"
+        },
+        "synchronous_interaction": {
+          "type": "boolean"
+        },
+        "agent_initiated_interaction": {
+          "type": "boolean"
+        },
+        "pause_resume": {
+          "type": "boolean"
+        },
+        "snapshot_capture": {
+          "type": "boolean"
+        },
+        "agent_suggested_snapshots": {
+          "type": "boolean"
+        },
+        "exact_snapshot_restore": {
+          "type": "boolean"
+        },
+        "reconstructed_restore": {
+          "type": "boolean"
+        },
+        "snapshot_consistency_modes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "application_consistent",
+              "quiesced",
+              "crash_consistent"
+            ]
+          }
+        },
+        "snapshot_transfer_profiles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "controller_mediated",
+              "delegated_direct_upload",
+              "local_content_handle"
+            ]
+          }
+        },
+        "document_publication_source": {
+          "type": "boolean"
+        },
+        "artifact_collection": {
+          "type": "boolean"
+        },
+        "transcript_read": {
+          "type": "boolean"
+        },
+        "transcript_source_ids": {
+          "type": "boolean"
+        }
+      }
+    },
+    "adapter_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_concurrent_runtimes",
+        "max_concurrent_sessions_per_runtime",
+        "max_concurrent_invocations_per_runtime"
+      ],
+      "properties": {
+        "max_concurrent_runtimes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_concurrent_sessions_per_runtime": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_concurrent_invocations_per_runtime": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_interaction_message_bytes": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "resolved_runtime_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "runtime_spec_id",
+        "runtime_id",
+        "agent_spec_ref",
+        "context_package_ref",
+        "workspace",
+        "capability_grant",
+        "policies",
+        "adapter",
+        "integrity"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "adapter.resolved_runtime_spec"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "runtime_spec_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "runtime_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "agent_spec_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "context_package_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "workspace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_ref",
+            "write_policy"
+          ],
+          "properties": {
+            "source_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            },
+            "snapshot_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            },
+            "write_policy": {
+              "type": "string",
+              "enum": [
+                "read_only",
+                "read_write"
+              ]
+            }
+          }
+        },
+        "capability_grant": {
+          "$ref": "common.schema.json#/$defs/capability_requirements"
+        },
+        "policies": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "network",
+            "destructive_actions",
+            "secret_access"
+          ],
+          "properties": {
+            "network": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "restricted",
+                "allowed"
+              ]
+            },
+            "destructive_actions": {
+              "type": "string",
+              "enum": [
+                "prohibited",
+                "require_approval",
+                "allowed"
+              ]
+            },
+            "secret_access": {
+              "type": "string",
+              "enum": [
+                "none",
+                "explicit",
+                "managed"
+              ]
+            },
+            "policy_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/uri"
+              }
+            }
+          }
+        },
+        "adapter": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "version",
+            "deployment_mode",
+            "config_ref",
+            "config_digest"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "deployment_mode": {
+              "type": "string",
+              "minLength": 1
+            },
+            "config_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            },
+            "config_digest": {
+              "$ref": "common.schema.json#/$defs/sha256"
+            }
+          }
+        },
+        "secret_handles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "handle_ref"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "handle_ref": {
+                "$ref": "common.schema.json#/$defs/uri"
+              }
+            }
+          }
+        },
+        "integrity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "digest"
+          ],
+          "properties": {
+            "digest": {
+              "$ref": "common.schema.json#/$defs/sha256"
+            }
+          }
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "adapter_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "operation_id",
+        "operation_type",
+        "idempotency_key",
+        "target",
+        "deadline",
+        "fencing_token",
+        "correlation",
+        "authorization_context"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "adapter.operation"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "operation_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "operation_type": {
+          "type": "string",
+          "enum": [
+            "DescribeAdapter",
+            "ValidateRuntimeSpec",
+            "CheckReadiness",
+            "PrepareRuntime",
+            "StartRuntime",
+            "InspectRuntime",
+            "StopRuntime",
+            "TerminateRuntime",
+            "ReconcileRuntime",
+            "CreateSession",
+            "InspectSession",
+            "CloseSession",
+            "ReadTranscript",
+            "PrepareInvocation",
+            "StartInvocation",
+            "SendInvocationInput",
+            "PauseInvocation",
+            "ResumeInvocation",
+            "CancelInvocation",
+            "TerminateInvocation",
+            "InspectInvocation",
+            "OpenInteractionChannel",
+            "SendInteractionInput",
+            "AcknowledgeInteractionMessage",
+            "CloseInteractionChannel",
+            "CreateSnapshot",
+            "RestoreSnapshot",
+            "CollectArtifacts",
+            "CollectDiagnostics"
+          ]
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/resource_target"
+        },
+        "deadline": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "fencing_token": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "correlation": {
+          "$ref": "common.schema.json#/$defs/correlation"
+        },
+        "authorization_context": {
+          "$ref": "common.schema.json#/$defs/authorization_context"
+        },
+        "payload_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "payload": {
+          "type": "object"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      },
+      "not": {
+        "required": [
+          "payload_ref",
+          "payload"
+        ]
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operation_type": {
+                "const": "StartInvocation"
+              }
+            },
+            "required": [
+              "operation_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/invocation_input"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation_type": {
+                "const": "OpenInteractionChannel"
+              }
+            },
+            "required": [
+              "operation_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/interaction_session"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation_type": {
+                "const": "SendInteractionInput"
+              }
+            },
+            "required": [
+              "operation_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/interaction_message"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "adapter_operation_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "result_id",
+        "operation_id",
+        "status",
+        "completed_at",
+        "fencing_token",
+        "correlation"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "adapter.operation_result"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "result_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "operation_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "completed_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "fencing_token": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "correlation": {
+          "$ref": "common.schema.json#/$defs/correlation"
+        },
+        "result_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "runtime_handle": {
+          "$ref": "#/$defs/adapter_handle"
+        },
+        "session_handle": {
+          "$ref": "#/$defs/adapter_handle"
+        },
+        "invocation_handle": {
+          "$ref": "#/$defs/adapter_handle"
+        },
+        "interaction_handle": {
+          "$ref": "#/$defs/adapter_handle"
+        },
+        "outcome": {
+          "$ref": "common.schema.json#/$defs/outcome"
+        },
+        "error": {
+          "$ref": "common.schema.json#/$defs/error_report"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "failed"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          }
+        }
+      ]
+    },
+    "adapter_handle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "opaque_id",
+        "created_at"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "runtime",
+            "session",
+            "invocation",
+            "interaction"
+          ]
+        },
+        "opaque_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "adapter_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "event_id",
+        "adapter_kind",
+        "adapter_version",
+        "event_type",
+        "aggregate",
+        "sequence",
+        "occurred_at",
+        "payload_schema_version",
+        "target",
+        "correlation"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "adapter.event"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "adapter_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adapter_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "runtime.prepared",
+            "runtime.started",
+            "runtime.ready",
+            "runtime.degraded",
+            "runtime.stopped",
+            "runtime.lost",
+            "session.created",
+            "session.updated",
+            "session.closed",
+            "invocation.accepted",
+            "invocation.started",
+            "invocation.progress",
+            "invocation.output_delta",
+            "invocation.artifact_created",
+            "invocation.capability_requested",
+            "invocation.interaction_requested",
+            "snapshot.suggested",
+            "snapshot.capture_started",
+            "snapshot.content_ready",
+            "snapshot.capture_failed",
+            "document.publication_requested",
+            "invocation.outcome_reported",
+            "invocation.stopped",
+            "interaction.opened",
+            "interaction.message",
+            "interaction.acknowledged",
+            "interaction.disconnected",
+            "interaction.closed"
+          ]
+        },
+        "aggregate": {
+          "$ref": "common.schema.json#/$defs/aggregate_ref"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "occurred_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "payload_schema_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/resource_target"
+        },
+        "correlation": {
+          "$ref": "common.schema.json#/$defs/correlation"
+        },
+        "payload_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "payload": {
+          "type": "object"
+        },
+        "raw_event_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "payload_ref"
+          ]
+        },
+        {
+          "required": [
+            "payload"
+          ]
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "event_type": {
+                "const": "invocation.interaction_requested"
+              }
+            },
+            "required": [
+              "event_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/interaction_request"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "event_type": {
+                "const": "interaction.message"
+              }
+            },
+            "required": [
+              "event_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/interaction_message"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "event_type": {
+                "const": "invocation.outcome_reported"
+              }
+            },
+            "required": [
+              "event_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "common.schema.json#/$defs/outcome"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

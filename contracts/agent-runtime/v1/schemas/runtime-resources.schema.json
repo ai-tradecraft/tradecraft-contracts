@@ -1,0 +1,1184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tradecraft.dev/agent-runtime/v1/runtime-resources.schema.json",
+  "title": "Agent Runtime Resource Documents",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/runtime_resource"
+    },
+    {
+      "$ref": "#/$defs/agent_session_resource"
+    },
+    {
+      "$ref": "#/$defs/invocation_input"
+    },
+    {
+      "$ref": "#/$defs/interaction_session"
+    },
+    {
+      "$ref": "#/$defs/interaction_request"
+    },
+    {
+      "$ref": "#/$defs/interaction_message"
+    },
+    {
+      "$ref": "#/$defs/transcript_snapshot"
+    },
+    {
+      "$ref": "#/$defs/snapshot_request"
+    },
+    {
+      "$ref": "#/$defs/snapshot_descriptor"
+    },
+    {
+      "$ref": "#/$defs/snapshot_manifest"
+    },
+    {
+      "$ref": "#/$defs/checkpoint"
+    },
+    {
+      "$ref": "#/$defs/document_publication_request"
+    },
+    {
+      "$ref": "#/$defs/document_publication_result"
+    },
+    {
+      "$ref": "#/$defs/artifact_manifest"
+    }
+  ],
+  "$defs": {
+    "runtime_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "runtime_id",
+        "controller_id",
+        "status",
+        "adapter_kind",
+        "deployment_mode",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "runtime_resource"
+        },
+        "runtime_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "controller_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "preparing",
+            "starting",
+            "ready",
+            "degraded",
+            "stopping",
+            "stopped",
+            "failed",
+            "lost"
+          ]
+        },
+        "adapter_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adapter_version": {
+          "type": "string"
+        },
+        "deployment_mode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capabilities": {
+          "$ref": "common.schema.json#/$defs/capability_values"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "updated_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "ended_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "agent_session_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "agent_session_id",
+        "runtime_id",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "agent_session_resource"
+        },
+        "agent_session_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "runtime_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "creating",
+            "ready",
+            "busy",
+            "waiting_for_human",
+            "closing",
+            "closed",
+            "failed",
+            "lost"
+          ]
+        },
+        "provider_session_ref": {
+          "type": "string"
+        },
+        "transcript_authority": {
+          "type": "string",
+          "enum": [
+            "authoritative",
+            "controller_journaled",
+            "reconstructed",
+            "unsupported"
+          ]
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "updated_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "ended_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "invocation_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "invocation_id",
+        "agent_spec_ref",
+        "context_package_ref",
+        "instruction_ref",
+        "completion_contract_ref"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "invocation_input"
+        },
+        "invocation_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "agent_spec_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "context_package_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "instruction_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "completion_contract_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "workspace_snapshot_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "input_artifact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/uri"
+          },
+          "uniqueItems": true
+        },
+        "deadline": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "interaction_session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "interaction_session_id",
+        "target",
+        "mode",
+        "purpose",
+        "status",
+        "participants",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "interaction_session"
+        },
+        "interaction_session_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/resource_target"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "asynchronous",
+            "synchronous"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "clarification",
+            "direct_contact",
+            "approval",
+            "authorization",
+            "incident_intervention",
+            "artifact_review"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "requested",
+            "opening",
+            "active",
+            "waiting",
+            "disconnected",
+            "closing",
+            "closed",
+            "cancelled",
+            "expired",
+            "failed"
+          ]
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/interaction_participant"
+          },
+          "minItems": 1
+        },
+        "last_controller_sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "last_agent_sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "updated_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "closed_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "timeout_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "interaction_participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "participant_ref",
+        "role"
+      ],
+      "properties": {
+        "participant_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "agent",
+            "operator",
+            "approver",
+            "observer",
+            "system"
+          ]
+        },
+        "joined_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "left_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "interaction_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "interaction_request_id",
+        "mode",
+        "purpose",
+        "question_ref",
+        "invocation_blocked",
+        "requested_at"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "interaction_request"
+        },
+        "interaction_request_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "asynchronous",
+            "synchronous"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "clarification",
+            "approval",
+            "authorization",
+            "incident_intervention",
+            "artifact_review"
+          ]
+        },
+        "question_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "response_schema_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "requested_human_role": {
+          "type": "string"
+        },
+        "urgency": {
+          "type": "string",
+          "enum": [
+            "low",
+            "normal",
+            "high",
+            "critical"
+          ]
+        },
+        "invocation_blocked": {
+          "type": "boolean"
+        },
+        "requested_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "timeout_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "continuation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "checkpoint_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "resume_token_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            }
+          },
+          "minProperties": 1
+        },
+        "related_artifact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/uri"
+          }
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "interaction_message": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "message_id",
+        "interaction_session_id",
+        "sequence",
+        "sender_ref",
+        "content_ref",
+        "sent_at"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "interaction_message"
+        },
+        "message_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "interaction_session_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sender_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "content_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "sent_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "acknowledged_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "reply_to_message_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "transcript_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "agent_session_id",
+        "authority",
+        "observed_at",
+        "messages"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "transcript_snapshot"
+        },
+        "agent_session_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "authority": {
+          "type": "string",
+          "enum": [
+            "authoritative",
+            "controller_journaled",
+            "reconstructed"
+          ]
+        },
+        "source_session_ref": {
+          "type": "string"
+        },
+        "observed_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/transcript_message"
+          }
+        },
+        "raw_content_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        }
+      }
+    },
+    "transcript_message": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_id",
+        "source_message_id",
+        "role",
+        "content_ref",
+        "created_at"
+      ],
+      "properties": {
+        "message_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "source_message_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "user",
+            "assistant",
+            "system",
+            "tool"
+          ]
+        },
+        "content_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "completed_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "snapshot_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "request_id",
+        "target",
+        "purpose",
+        "requested_by",
+        "reason",
+        "include",
+        "requested_at"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "snapshot_request"
+        },
+        "request_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/resource_target"
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "recovery_point",
+            "checkpoint_candidate",
+            "diagnostic",
+            "migration"
+          ]
+        },
+        "requested_by": {
+          "type": "string",
+          "enum": [
+            "agent",
+            "orchestrator",
+            "controller",
+            "operator",
+            "policy",
+            "adapter"
+          ]
+        },
+        "requested_by_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "milestone": {
+          "type": "string",
+          "minLength": 1
+        },
+        "include": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "workspace",
+              "git_state",
+              "agent_session",
+              "transcript",
+              "agent_spec",
+              "context_manifest",
+              "environment",
+              "plan",
+              "artifacts",
+              "provider_state",
+              "side_effect_journal",
+              "restore_recipe"
+            ]
+          }
+        },
+        "checkpoint_candidate": {
+          "type": "boolean",
+          "default": false
+        },
+        "requested_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "snapshot_descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "snapshot_id",
+        "target",
+        "created_at",
+        "purpose",
+        "requested_by",
+        "consistency",
+        "contents",
+        "resumability_mode",
+        "side_effect_state",
+        "retention",
+        "content_ref"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "snapshot_descriptor"
+        },
+        "snapshot_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/resource_target"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "recovery_point",
+            "checkpoint_candidate",
+            "diagnostic",
+            "migration"
+          ]
+        },
+        "requested_by": {
+          "type": "string",
+          "enum": [
+            "agent",
+            "orchestrator",
+            "controller",
+            "operator",
+            "policy",
+            "adapter"
+          ]
+        },
+        "requested_by_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "trigger": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consistency": {
+          "type": "string",
+          "enum": [
+            "application_consistent",
+            "quiesced",
+            "crash_consistent"
+          ]
+        },
+        "contents": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "workspace",
+              "git_state",
+              "agent_session",
+              "transcript",
+              "agent_spec",
+              "context_manifest",
+              "environment",
+              "plan",
+              "artifacts",
+              "provider_state",
+              "side_effect_journal",
+              "restore_recipe"
+            ]
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "resumability_mode": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "reconstructed",
+            "replayable",
+            "manual",
+            "non_resumable"
+          ]
+        },
+        "portable": {
+          "type": "boolean"
+        },
+        "base_snapshot_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "capture_watermark": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "controller_event_sequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "command_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "fencing_token": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "workspace_revision": {
+              "type": "string"
+            },
+            "provider_session_revision": {
+              "type": "string"
+            }
+          }
+        },
+        "side_effect_state": {
+          "type": "string",
+          "enum": [
+            "reconciled",
+            "pending",
+            "ambiguous",
+            "not_applicable"
+          ]
+        },
+        "retention": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "class"
+          ],
+          "properties": {
+            "class": {
+              "type": "string",
+              "enum": [
+                "rolling",
+                "candidate",
+                "pinned",
+                "diagnostic"
+              ]
+            },
+            "expires_at": {
+              "$ref": "common.schema.json#/$defs/timestamp"
+            }
+          }
+        },
+        "checkpoint_candidate": {
+          "type": "boolean"
+        },
+        "content_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "adapter_kind": {
+          "type": "string"
+        },
+        "adapter_version": {
+          "type": "string"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "snapshot_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "snapshot_id",
+        "created_at",
+        "components"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "snapshot_manifest"
+        },
+        "snapshot_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "content_ref",
+              "required_for_restore"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "workspace",
+                  "git_state",
+                  "agent_session",
+                  "transcript",
+                  "agent_spec",
+                  "context_manifest",
+                  "environment",
+                  "plan",
+                  "artifacts",
+                  "provider_state",
+                  "side_effect_journal",
+                  "restore_recipe"
+                ]
+              },
+              "content_ref": {
+                "$ref": "common.schema.json#/$defs/content_ref"
+              },
+              "required_for_restore": {
+                "type": "boolean"
+              },
+              "adapter_kind": {
+                "type": "string"
+              },
+              "adapter_version": {
+                "type": "string"
+              },
+              "sensitivity": {
+                "type": "string",
+                "enum": [
+                  "public",
+                  "internal",
+                  "confidential",
+                  "restricted"
+                ]
+              }
+            }
+          }
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "checkpoint_id",
+        "workflow_position",
+        "snapshot_refs",
+        "verification",
+        "captured_through_event_sequence",
+        "committed_at",
+        "accepted_by"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "checkpoint"
+        },
+        "checkpoint_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "workflow_position": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "run_id",
+            "branch_id"
+          ],
+          "properties": {
+            "run_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "branch_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "phase_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "step_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "attempt_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            }
+          }
+        },
+        "snapshot_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/uri"
+          }
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "gate_decisions"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "passed",
+                "waived"
+              ]
+            },
+            "gate_decisions": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "gate_id",
+                  "status"
+                ],
+                "properties": {
+                  "gate_id": {
+                    "$ref": "common.schema.json#/$defs/identifier"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "approved",
+                      "waived"
+                    ]
+                  },
+                  "evidence_refs": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                      "$ref": "common.schema.json#/$defs/uri"
+                    }
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "captured_through_event_sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "resume_at": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "phase_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "step_id": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            }
+          }
+        },
+        "committed_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "accepted_by": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "document_publication_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "publication_id",
+        "source",
+        "logical_path",
+        "title",
+        "media_type",
+        "version_intent",
+        "idempotency_key",
+        "target",
+        "correlation"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "document_publication_request"
+        },
+        "publication_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "required": [
+                "workspace_path"
+              ]
+            },
+            {
+              "required": [
+                "content_ref"
+              ]
+            }
+          ],
+          "properties": {
+            "workspace_path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "content_ref": {
+              "$ref": "common.schema.json#/$defs/content_ref"
+            }
+          }
+        },
+        "logical_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "version_intent": {
+          "type": "string",
+          "enum": [
+            "create",
+            "major",
+            "minor",
+            "patch"
+          ]
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/resource_target"
+        },
+        "correlation": {
+          "$ref": "common.schema.json#/$defs/correlation"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "document_publication_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "publication_id",
+        "document_ref",
+        "version_ref",
+        "content_ref",
+        "created",
+        "published_at"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "document_publication_result"
+        },
+        "publication_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "document_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "version_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "content_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "created": {
+          "type": "boolean"
+        },
+        "published_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "artifact_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "manifest_id",
+        "created_at",
+        "artifacts"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "artifact_manifest"
+        },
+        "manifest_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/artifact_descriptor"
+          }
+        }
+      }
+    }
+  }
+}

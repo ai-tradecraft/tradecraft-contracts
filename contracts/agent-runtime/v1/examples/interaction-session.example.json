@@ -1,0 +1,31 @@
+{
+  "document_type": "interaction_session",
+  "interaction_session_id": "interaction_55",
+  "target": {
+    "controller_id": "controller_local_1",
+    "runtime_id": "runtime_123",
+    "agent_session_id": "session_456",
+    "invocation_id": "inv_913",
+    "interaction_session_id": "interaction_55"
+  },
+  "mode": "synchronous",
+  "purpose": "clarification",
+  "status": "active",
+  "participants": [
+    {
+      "participant_ref": "agent://runtime_123/session_456",
+      "role": "agent",
+      "joined_at": "2026-07-01T01:13:00Z"
+    },
+    {
+      "participant_ref": "user://operator/42",
+      "role": "operator",
+      "joined_at": "2026-07-01T01:13:02Z"
+    }
+  ],
+  "last_controller_sequence": 3,
+  "last_agent_sequence": 2,
+  "created_at": "2026-07-01T01:12:00Z",
+  "updated_at": "2026-07-01T01:14:00Z",
+  "timeout_at": "2026-07-01T01:42:00Z"
+}

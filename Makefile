@@ -25,7 +25,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: setup ci lint check-pre-commit check-python help
+.PHONY: setup ci lint validate-contracts restore build test check-pre-commit check-python check-dotnet help
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
@@ -44,10 +44,22 @@ setup: check-pre-commit check-python ## Configure the repo to use the shared git
 #
 # Projects built from this template extend `ci` by adding their own build/test
 # steps (e.g. `dotnet test`, `npm test`) as dependencies or extra recipe lines.
-ci: check-pre-commit lint ## Run the full CI check suite (what pipelines invoke)
+ci: check-pre-commit lint validate-contracts restore build test ## Run the full CI check suite (what pipelines invoke)
 
 lint: check-pre-commit ## Run all pre-commit hooks against all files (same hooks as the git hooks)
 	pre-commit run --all-files --show-diff-on-failure
+
+validate-contracts: ## Validate JSON Schemas and examples
+	uv run python contracts/agent-runtime/v1/validate_contracts.py
+
+restore: check-dotnet ## Restore .NET projects
+	dotnet restore
+
+build: check-dotnet ## Build .NET contract projects
+	dotnet build --no-restore
+
+test: check-dotnet ## Run .NET contract tests
+	dotnet test --no-restore
 
 check-pre-commit: ## Verify the pre-commit tool is installed
 	@command -v pre-commit > /dev/null || { \
@@ -69,3 +81,9 @@ check-python: ## Verify a Python 3.10 interpreter is available for the hooks
 		echo '       Windows:      install from https://www.python.org/downloads/' 1>&2; \
 		exit 1; \
 	fi
+
+check-dotnet: ## Verify the .NET SDK is installed
+	@command -v dotnet > /dev/null || { \
+		echo 'Error: `dotnet` not found. Install the .NET SDK from https://dotnet.microsoft.com/download.' 1>&2; \
+		exit 1; \
+	}

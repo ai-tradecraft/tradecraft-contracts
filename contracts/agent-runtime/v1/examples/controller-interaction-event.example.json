@@ -1,0 +1,49 @@
+{
+  "message_type": "controller.event",
+  "protocol_version": "1.0",
+  "schema_version": "1.0",
+  "event_id": "event_900",
+  "controller_id": "controller_local_1",
+  "event_type": "InteractionRequested",
+  "aggregate": {
+    "type": "invocation",
+    "id": "inv_913"
+  },
+  "sequence": 14,
+  "occurred_at": "2026-07-01T01:12:00Z",
+  "payload_schema_version": "1.0",
+  "target": {
+    "controller_id": "controller_local_1",
+    "runtime_id": "runtime_123",
+    "agent_session_id": "session_456",
+    "invocation_id": "inv_913"
+  },
+  "correlation": {
+    "command_id": "cmd_712",
+    "causation_id": "adapter_event_899",
+    "correlation_id": "corr_123",
+    "run_id": "run_123",
+    "branch_id": "main",
+    "step_id": "implement",
+    "attempt_id": "attempt_3",
+    "invocation_id": "inv_913"
+  },
+  "fencing_token": 19,
+  "payload": {
+    "document_type": "interaction_request",
+    "interaction_request_id": "interaction_request_1",
+    "mode": "synchronous",
+    "purpose": "clarification",
+    "question_ref": {
+      "uri": "content://interactions/questions/1",
+      "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "content_type": "text/markdown",
+      "length": 128
+    },
+    "requested_human_role": "system_owner",
+    "urgency": "normal",
+    "invocation_blocked": true,
+    "requested_at": "2026-07-01T01:12:00Z",
+    "timeout_at": "2026-07-01T01:42:00Z"
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "api_version": "agent-runtime/v1",
+  "kind": "WorkflowDefinition",
+  "metadata": {
+    "name": "implement-change",
+    "version": "1.0.0",
+    "description": "Plan, approve, implement, and validate a change."
+  },
+  "spec": {
+    "inputs": {
+      "task": {
+        "type": "string",
+        "required": true
+      }
+    },
+    "policies": {
+      "max_duration": "PT8H",
+      "max_parallelism": 3,
+      "max_retries": 3,
+      "destructive_actions": "require_approval"
+    },
+    "flow": {
+      "id": "root",
+      "sequence": [
+        {
+          "id": "plan",
+          "invoke_agent": {
+            "template": "planner",
+            "objective": "Produce an executable plan for ${inputs.task}.",
+            "runtime_requirements": {
+              "required": [
+                "repository.read"
+              ],
+              "optional": []
+            },
+            "completion_contract_ref": "contract://completion/plan-v1"
+          }
+        },
+        {
+          "id": "approve_plan",
+          "human_gate": {
+            "type": "approval",
+            "artifact": "${steps.plan.outputs.plan}",
+            "requested_role": "system_owner",
+            "timeout": "P2D"
+          }
+        },
+        {
+          "id": "commit_plan_checkpoint",
+          "checkpoint": {
+            "include": [
+              "workflow_state",
+              "workspace_snapshot",
+              "agent_session",
+              "context_manifest",
+              "artifacts"
+            ],
+            "verification": {
+              "required_gates": [
+                "approve_plan"
+              ],
+              "allow_waiver": false
+            },
+            "on_failure": "remain_in_phase"
+          }
+        },
+        {
+          "id": "execute",
+          "dynamic_plan": {
+            "source": "${steps.plan.outputs.plan}",
+            "allowed_primitives": [
+              "sequence",
+              "parallel",
+              "loop",
+              "invoke_agent",
+              "checkpoint"
+            ],
+            "constraints": {
+              "max_tasks": 20,
+              "max_parallelism": 3,
+              "max_iterations": 5
+            }
+          }
+        },
+        {
+          "id": "validate",
+          "retry": {
+            "policy": {
+              "max_attempts": 3,
+              "backoff": {
+                "strategy": "exponential",
+                "initial": "PT10S",
+                "maximum": "PT10M",
+                "jitter": true
+              },
+              "retry_on": [
+                "retryable_failure",
+                "controller_unavailable"
+              ]
+            },
+            "body": {
+              "id": "run_validation",
+              "invoke_agent": {
+                "template": "test_engineer",
+                "objective": "Validate the implementation.",
+                "runtime_requirements": {
+                  "required": [
+                    "repository.read",
+                    "tests.execute"
+                  ]
+                },
+                "completion_contract_ref": "contract://completion/validation-v1"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

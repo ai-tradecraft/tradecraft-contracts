@@ -1,0 +1,23 @@
+{
+  "kind": "blocked",
+  "summary": "A requirement is ambiguous and the invocation cannot proceed safely.",
+  "blockers": [
+    {
+      "type": "ambiguous_requirement",
+      "summary": "The retention policy for deleted users is unspecified.",
+      "question_ref": {
+        "uri": "content://interactions/questions/retention-policy",
+        "sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+        "content_type": "text/plain",
+        "length": 70
+      }
+    }
+  ],
+  "confidence": 0.98,
+  "resumable": true,
+  "recommended_action": "open_synchronous_interaction",
+  "continuation": {
+    "checkpoint_id": "checkpoint_182",
+    "resume_token_ref": "resume-token://inv_913/73a9"
+  }
+}

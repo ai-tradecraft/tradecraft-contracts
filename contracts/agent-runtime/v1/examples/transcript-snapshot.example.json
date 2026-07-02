@@ -1,0 +1,40 @@
+{
+  "document_type": "transcript_snapshot",
+  "agent_session_id": "session_456",
+  "authority": "authoritative",
+  "source_session_ref": "opencode-session-abc",
+  "observed_at": "2026-07-01T01:15:00Z",
+  "messages": [
+    {
+      "message_id": "message_1",
+      "source_message_id": "opencode-message-1",
+      "role": "user",
+      "content_ref": {
+        "uri": "content://transcripts/session_456/message_1",
+        "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+        "content_type": "text/plain",
+        "length": 24
+      },
+      "created_at": "2026-07-01T01:03:10Z"
+    },
+    {
+      "message_id": "message_2",
+      "source_message_id": "opencode-message-2",
+      "role": "assistant",
+      "content_ref": {
+        "uri": "content://transcripts/session_456/message_2",
+        "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+        "content_type": "text/plain",
+        "length": 64
+      },
+      "created_at": "2026-07-01T01:03:12Z",
+      "completed_at": "2026-07-01T01:04:00Z"
+    }
+  ],
+  "raw_content_ref": {
+    "uri": "content://transcripts/session_456/raw",
+    "sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+    "content_type": "application/json",
+    "length": 4096
+  }
+}

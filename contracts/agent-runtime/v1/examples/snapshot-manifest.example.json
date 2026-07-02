@@ -1,0 +1,44 @@
+{
+  "document_type": "snapshot_manifest",
+  "snapshot_id": "snapshot_42",
+  "created_at": "2026-07-01T01:21:00Z",
+  "components": [
+    {
+      "kind": "workspace",
+      "content_ref": {
+        "uri": "asset://folders/workspace_123/versions/7",
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "content_type": "application/vnd.tradecraft.folder-manifest+json",
+        "length": 8192
+      },
+      "required_for_restore": true,
+      "sensitivity": "internal"
+    },
+    {
+      "kind": "transcript",
+      "content_ref": {
+        "uri": "asset://documents/transcript_456/versions/3",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "content_type": "application/vnd.tradecraft.transcript-snapshot+json",
+        "length": 4096
+      },
+      "required_for_restore": false,
+      "adapter_kind": "opencode",
+      "adapter_version": "1.0.0",
+      "sensitivity": "confidential"
+    },
+    {
+      "kind": "restore_recipe",
+      "content_ref": {
+        "uri": "asset://documents/restore_recipe_42/versions/1",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+        "content_type": "application/vnd.tradecraft.restore-recipe+json",
+        "length": 1024
+      },
+      "required_for_restore": true,
+      "adapter_kind": "opencode",
+      "adapter_version": "1.0.0",
+      "sensitivity": "internal"
+    }
+  ]
+}

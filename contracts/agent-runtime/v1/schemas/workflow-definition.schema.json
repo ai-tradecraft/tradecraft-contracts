@@ -1,0 +1,892 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tradecraft.dev/agent-runtime/v1/workflow-definition.schema.json",
+  "title": "Agent Runtime Workflow Definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "api_version": {
+      "const": "agent-runtime/v1"
+    },
+    "kind": {
+      "const": "WorkflowDefinition"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,62}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+        },
+        "description": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inputs",
+        "policies",
+        "flow"
+      ],
+      "properties": {
+        "inputs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/input_definition"
+          }
+        },
+        "policies": {
+          "$ref": "#/$defs/workflow_policies"
+        },
+        "flow": {
+          "$ref": "#/$defs/node"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "input_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "object",
+            "array"
+          ]
+        },
+        "required": {
+          "type": "boolean",
+          "default": true
+        },
+        "default": true,
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "workflow_policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_duration",
+        "max_parallelism",
+        "destructive_actions"
+      ],
+      "properties": {
+        "max_duration": {
+          "$ref": "common.schema.json#/$defs/duration"
+        },
+        "max_parallelism": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_iterations": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "destructive_actions": {
+          "type": "string",
+          "enum": [
+            "prohibited",
+            "require_approval",
+            "allowed"
+          ]
+        },
+        "allowed_adapter_kinds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "allowed_networks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "expression": {
+      "type": "string",
+      "minLength": 1
+    },
+    "node": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/step_reference"
+        },
+        {
+          "$ref": "#/$defs/invoke_agent_node"
+        },
+        {
+          "$ref": "#/$defs/sequence_node"
+        },
+        {
+          "$ref": "#/$defs/parallel_node"
+        },
+        {
+          "$ref": "#/$defs/switch_node"
+        },
+        {
+          "$ref": "#/$defs/loop_node"
+        },
+        {
+          "$ref": "#/$defs/retry_node"
+        },
+        {
+          "$ref": "#/$defs/checkpoint_node"
+        },
+        {
+          "$ref": "#/$defs/fork_node"
+        },
+        {
+          "$ref": "#/$defs/join_node"
+        },
+        {
+          "$ref": "#/$defs/human_gate_node"
+        },
+        {
+          "$ref": "#/$defs/compensation_node"
+        },
+        {
+          "$ref": "#/$defs/child_workflow_node"
+        },
+        {
+          "$ref": "#/$defs/wait_node"
+        },
+        {
+          "$ref": "#/$defs/emit_node"
+        },
+        {
+          "$ref": "#/$defs/evaluate_node"
+        },
+        {
+          "$ref": "#/$defs/dynamic_plan_node"
+        }
+      ]
+    },
+    "step_reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "invoke_agent_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "invoke_agent"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "invoke_agent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "template",
+            "objective"
+          ],
+          "properties": {
+            "template": {
+              "type": "string",
+              "minLength": 1
+            },
+            "objective": {
+              "type": "string",
+              "minLength": 1
+            },
+            "context_package_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            },
+            "runtime_requirements": {
+              "$ref": "common.schema.json#/$defs/capability_requirements"
+            },
+            "completion_contract_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            }
+          }
+        },
+        "compensate_with": {
+          "type": "string"
+        }
+      }
+    },
+    "sequence_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sequence"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "sequence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/node"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "parallel_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "parallel"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "parallel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "branches"
+          ],
+          "properties": {
+            "branches": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/node"
+              },
+              "minItems": 2
+            },
+            "max_parallelism": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "switch_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "switch"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "switch": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expression",
+            "cases",
+            "default"
+          ],
+          "properties": {
+            "expression": {
+              "$ref": "#/$defs/expression"
+            },
+            "cases": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/node"
+              },
+              "minProperties": 1
+            },
+            "default": {
+              "$ref": "#/$defs/node"
+            }
+          }
+        }
+      }
+    },
+    "loop_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "loop"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "loop": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "body"
+          ],
+          "properties": {
+            "body": {
+              "$ref": "#/$defs/node"
+            },
+            "until": {
+              "$ref": "#/$defs/expression"
+            },
+            "max_iterations": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "deadline": {
+              "$ref": "common.schema.json#/$defs/duration"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "max_iterations"
+              ]
+            },
+            {
+              "required": [
+                "deadline"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "retry_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_attempts",
+        "backoff",
+        "retry_on"
+      ],
+      "properties": {
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "backoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "strategy",
+            "initial",
+            "maximum"
+          ],
+          "properties": {
+            "strategy": {
+              "type": "string",
+              "enum": [
+                "fixed",
+                "exponential"
+              ]
+            },
+            "initial": {
+              "$ref": "common.schema.json#/$defs/duration"
+            },
+            "maximum": {
+              "$ref": "common.schema.json#/$defs/duration"
+            },
+            "jitter": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "retry_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "retry_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "retry"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "retry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy",
+            "body"
+          ],
+          "properties": {
+            "policy": {
+              "$ref": "#/$defs/retry_policy"
+            },
+            "body": {
+              "$ref": "#/$defs/node"
+            }
+          }
+        }
+      }
+    },
+    "checkpoint_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "checkpoint"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "include",
+            "verification"
+          ],
+          "properties": {
+            "include": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "workflow_state",
+                  "workspace_snapshot",
+                  "agent_session",
+                  "context_manifest",
+                  "artifacts"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "verification": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "required_gates",
+                "allow_waiver"
+              ],
+              "properties": {
+                "required_gates": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "common.schema.json#/$defs/identifier"
+                  }
+                },
+                "allow_waiver": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "on_failure": {
+              "type": "string",
+              "enum": [
+                "remain_in_phase",
+                "retry",
+                "fail_run"
+              ],
+              "default": "remain_in_phase"
+            }
+          }
+        }
+      }
+    },
+    "fork_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "fork"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "fork": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "from_checkpoint",
+            "branches"
+          ],
+          "properties": {
+            "from_checkpoint": {
+              "$ref": "#/$defs/expression"
+            },
+            "branches": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/node"
+              },
+              "minItems": 2
+            }
+          }
+        }
+      }
+    },
+    "join_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "join"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "join": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "strategy"
+          ],
+          "properties": {
+            "strategy": {
+              "type": "string",
+              "enum": [
+                "wait_all",
+                "wait_any",
+                "first_success",
+                "quorum",
+                "evaluator_selects",
+                "human_selects",
+                "merge_agent"
+              ]
+            },
+            "evaluator": {
+              "type": "string"
+            },
+            "quorum": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "human_gate_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "human_gate"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "human_gate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "artifact"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "information_request",
+                "approval",
+                "risk_acceptance",
+                "conflict_resolution",
+                "credential_request",
+                "authorization_request",
+                "policy_exception",
+                "artifact_review",
+                "plan_selection",
+                "branch_selection",
+                "intervention"
+              ]
+            },
+            "artifact": {
+              "$ref": "#/$defs/expression"
+            },
+            "requested_role": {
+              "type": "string"
+            },
+            "timeout": {
+              "$ref": "common.schema.json#/$defs/duration"
+            }
+          }
+        }
+      }
+    },
+    "compensation_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "compensate"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "compensate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "step_ref",
+            "action"
+          ],
+          "properties": {
+            "step_ref": {
+              "type": "string"
+            },
+            "action": {
+              "$ref": "#/$defs/node"
+            }
+          }
+        }
+      }
+    },
+    "child_workflow_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "call_workflow"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "call_workflow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "workflow_ref"
+          ],
+          "properties": {
+            "workflow_ref": {
+              "$ref": "common.schema.json#/$defs/uri"
+            },
+            "inputs": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "wait_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "wait"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "wait": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "duration": {
+              "$ref": "common.schema.json#/$defs/duration"
+            },
+            "until_event": {
+              "type": "string"
+            },
+            "until_expression": {
+              "$ref": "#/$defs/expression"
+            }
+          },
+          "minProperties": 1
+        }
+      }
+    },
+    "emit_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "emit"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "emit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "event_type"
+          ],
+          "properties": {
+            "event_type": {
+              "type": "string"
+            },
+            "payload": {
+              "type": "object"
+            },
+            "artifact_ref": {
+              "$ref": "#/$defs/expression"
+            }
+          }
+        }
+      }
+    },
+    "evaluate_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "evaluate"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "evaluate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "expression",
+                "policy",
+                "ruleset",
+                "agent"
+              ]
+            },
+            "expression": {
+              "$ref": "#/$defs/expression"
+            },
+            "evaluator_ref": {
+              "type": "string"
+            },
+            "inputs": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "dynamic_plan_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "dynamic_plan"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "dynamic_plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "allowed_primitives",
+            "constraints"
+          ],
+          "properties": {
+            "source": {
+              "$ref": "#/$defs/expression"
+            },
+            "allowed_primitives": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "sequence",
+                  "parallel",
+                  "switch",
+                  "loop",
+                  "retry",
+                  "invoke_agent",
+                  "checkpoint",
+                  "human_gate",
+                  "wait",
+                  "emit",
+                  "evaluate"
+                ]
+              },
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "constraints": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "max_tasks",
+                "max_parallelism"
+              ],
+              "properties": {
+                "max_tasks": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "max_parallelism": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "max_iterations": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

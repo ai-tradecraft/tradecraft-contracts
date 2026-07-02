@@ -1,0 +1,53 @@
+{
+  "message_type": "controller.command",
+  "protocol_version": "1.0",
+  "schema_version": "1.0",
+  "command_id": "cmd_712",
+  "command_type": "StartInvocation",
+  "idempotency_key": "inv_913:start",
+  "issued_at": "2026-07-01T01:03:00Z",
+  "available_at": "2026-07-01T01:03:00Z",
+  "target": {
+    "controller_id": "controller_local_1",
+    "runtime_id": "runtime_123",
+    "agent_session_id": "session_456",
+    "invocation_id": "inv_913"
+  },
+  "correlation": {
+    "command_id": "cmd_712",
+    "correlation_id": "corr_123",
+    "run_id": "run_123",
+    "branch_id": "main",
+    "step_id": "implement",
+    "step_execution_id": "step_execution_7",
+    "attempt_id": "attempt_3",
+    "invocation_id": "inv_913",
+    "trace_id": "0123456789abcdef0123456789abcdef",
+    "span_id": "0123456789abcdef"
+  },
+  "authorization_context": {
+    "subject_ref": "user://operator/42",
+    "grant_ref": "authorization-grant://invocation/inv_913",
+    "issued_at": "2026-07-01T01:02:00Z",
+    "expires_at": "2026-07-01T03:02:00Z"
+  },
+  "execution": {
+    "deadline": "2026-07-01T02:00:00Z",
+    "heartbeat_interval": "PT30S",
+    "lease": {
+      "lease_id": "lease_19",
+      "controller_id": "controller_local_1",
+      "acquired_at": "2026-07-01T01:03:00Z",
+      "expires_at": "2026-07-01T01:08:00Z",
+      "attempt": 1,
+      "fencing_token": 19
+    }
+  },
+  "payload_ref": {
+    "uri": "content://invocations/inv_913/input",
+    "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "content_type": "application/vnd.tradecraft.invocation-input+json",
+    "length": 842,
+    "schema_ref": "https://schemas.tradecraft.dev/agent-runtime/v1/runtime-resources.schema.json#/$defs/invocation_input"
+  }
+}

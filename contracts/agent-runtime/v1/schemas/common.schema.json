@@ -1,0 +1,553 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tradecraft.dev/agent-runtime/v1/common.schema.json",
+  "title": "Tradecraft Agent Runtime Common Definitions",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9._:-]{0,127}$"
+    },
+    "protocol_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration": {
+      "type": "string",
+      "pattern": "^P(?!$)(?:\\d+Y)?(?:\\d+M)?(?:\\d+D)?(?:T(?=\\d)(?:\\d+H)?(?:\\d+M)?(?:\\d+(?:\\.\\d+)?S)?)?$"
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^(?:sha256:)?[A-Fa-f0-9]{64}$"
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9.-]+/[A-Za-z][A-Za-z0-9._-]+$"
+      },
+      "additionalProperties": true,
+      "default": {}
+    },
+    "content_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uri",
+        "sha256",
+        "content_type",
+        "length"
+      ],
+      "properties": {
+        "uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "content_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "schema_ref": {
+          "$ref": "#/$defs/uri"
+        },
+        "encryption": {
+          "type": "string",
+          "enum": [
+            "none",
+            "platform_managed"
+          ]
+        }
+      }
+    },
+    "correlation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "command_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causation_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "correlation_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "run_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "branch_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "step_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "step_execution_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "attempt_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "invocation_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{32}$"
+        },
+        "span_id": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{16}$"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "correlation_id"
+          ]
+        },
+        {
+          "required": [
+            "run_id"
+          ]
+        },
+        {
+          "required": [
+            "command_id"
+          ]
+        },
+        {
+          "required": [
+            "trace_id"
+          ]
+        }
+      ]
+    },
+    "resource_target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "controller_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "runtime_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "invocation_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "interaction_session_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "checkpoint_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "snapshot_id": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "minProperties": 1
+    },
+    "authorization_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject_ref",
+        "grant_ref",
+        "issued_at"
+      ],
+      "properties": {
+        "subject_ref": {
+          "$ref": "#/$defs/uri"
+        },
+        "grant_ref": {
+          "$ref": "#/$defs/uri"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    },
+    "capability_values": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        ]
+      }
+    },
+    "capability_requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required"
+      ],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "optional": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "default": []
+        }
+      }
+    },
+    "artifact_descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "content_ref",
+        "created_at"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "artifact_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_ref": {
+          "$ref": "#/$defs/content_ref"
+        },
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "producer_ref": {
+          "$ref": "#/$defs/uri"
+        },
+        "retention_policy_ref": {
+          "$ref": "#/$defs/uri"
+        },
+        "sensitivity": {
+          "type": "string",
+          "enum": [
+            "public",
+            "internal",
+            "confidential",
+            "restricted"
+          ]
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "status",
+        "ref"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "passed",
+            "failed",
+            "inconclusive",
+            "not_run"
+          ]
+        },
+        "ref": {
+          "$ref": "#/$defs/uri"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "summary"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "question_ref": {
+          "$ref": "#/$defs/content_ref"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/uri"
+          }
+        }
+      }
+    },
+    "error_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "classification",
+        "summary",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "invalid_request",
+            "unsupported_capability",
+            "controller_unavailable",
+            "runtime_unavailable",
+            "provider_unavailable",
+            "authentication_failed",
+            "authorization_failed",
+            "policy_denied",
+            "resource_exhausted",
+            "deadline_exceeded",
+            "cancelled",
+            "conflict",
+            "stale_fencing_token",
+            "invalid_provider_response",
+            "internal_controller_error",
+            "internal_adapter_error"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "target_usable": {
+          "type": "boolean"
+        },
+        "reconciliation_required": {
+          "type": "boolean"
+        },
+        "diagnostic_ref": {
+          "$ref": "#/$defs/content_ref"
+        },
+        "provider_request_id": {
+          "type": "string"
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "summary"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "completed_with_warnings",
+            "partial",
+            "blocked",
+            "needs_input",
+            "needs_human_review",
+            "needs_authorization",
+            "needs_additional_capability",
+            "retryable_failure",
+            "non_retryable_failure",
+            "invalid_task",
+            "unsafe_to_continue",
+            "cancelled",
+            "timed_out",
+            "superseded"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact_descriptor"
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blocker"
+          }
+        },
+        "missing_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "resumable": {
+          "type": "boolean"
+        },
+        "recommended_action": {
+          "type": "string"
+        },
+        "continuation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "checkpoint_id": {
+              "$ref": "#/$defs/identifier"
+            },
+            "resume_token_ref": {
+              "$ref": "#/$defs/uri"
+            }
+          },
+          "minProperties": 1
+        },
+        "error": {
+          "$ref": "#/$defs/error_report"
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "blocked"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "blockers"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "needs_additional_capability"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "missing_capabilities"
+            ]
+          }
+        }
+      ]
+    },
+    "aggregate_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "id"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "workflow_run",
+            "controller",
+            "runtime",
+            "agent_session",
+            "invocation",
+            "interaction_session",
+            "snapshot",
+            "checkpoint"
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    }
+  }
+}

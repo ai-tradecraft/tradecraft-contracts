@@ -1,0 +1,14 @@
+{
+  "document_type": "interaction_message",
+  "message_id": "message_bad",
+  "interaction_session_id": "interaction_55",
+  "sequence": 0,
+  "sender_ref": "user://operator/42",
+  "content_ref": {
+    "uri": "content://interactions/interaction_55/message_bad",
+    "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+    "content_type": "text/plain",
+    "length": 10
+  },
+  "sent_at": "2026-07-01T01:14:00Z"
+}

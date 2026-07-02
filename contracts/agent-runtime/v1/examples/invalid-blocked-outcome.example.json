@@ -1,0 +1,5 @@
+{
+  "kind": "blocked",
+  "summary": "This outcome is invalid because it omits blockers.",
+  "resumable": true
+}

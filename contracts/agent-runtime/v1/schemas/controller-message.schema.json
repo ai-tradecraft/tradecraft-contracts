@@ -1,0 +1,1008 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tradecraft.dev/agent-runtime/v1/controller-message.schema.json",
+  "title": "Orchestrator To Lamplighter Controller Protocol Message",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/controller_registration"
+    },
+    {
+      "$ref": "#/$defs/controller_registration_accepted"
+    },
+    {
+      "$ref": "#/$defs/controller_heartbeat"
+    },
+    {
+      "$ref": "#/$defs/controller_command"
+    },
+    {
+      "$ref": "#/$defs/command_acknowledgement"
+    },
+    {
+      "$ref": "#/$defs/command_lease_renewal"
+    },
+    {
+      "$ref": "#/$defs/command_completion"
+    },
+    {
+      "$ref": "#/$defs/controller_event"
+    }
+  ],
+  "$defs": {
+    "base_message_properties": {
+      "protocol_version": {
+        "$ref": "common.schema.json#/$defs/protocol_version"
+      },
+      "schema_version": {
+        "$ref": "common.schema.json#/$defs/schema_version"
+      },
+      "extensions": {
+        "$ref": "common.schema.json#/$defs/extensions"
+      }
+    },
+    "controller_registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "registration_id",
+        "controller",
+        "registered_at"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "controller.registration"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "registration_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "controller": {
+          "$ref": "#/$defs/controller_descriptor"
+        },
+        "registered_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "authorization_context": {
+          "$ref": "common.schema.json#/$defs/authorization_context"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "controller_registration_accepted": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "registration_id",
+        "controller_id",
+        "accepted_at",
+        "heartbeat_interval"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "controller.registration_accepted"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "registration_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "controller_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "accepted_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "heartbeat_interval": {
+          "$ref": "common.schema.json#/$defs/duration"
+        },
+        "command_channel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "transport"
+          ],
+          "properties": {
+            "transport": {
+              "type": "string",
+              "enum": [
+                "https_long_poll",
+                "websocket",
+                "signalr",
+                "grpc_stream",
+                "broker"
+              ]
+            },
+            "endpoint": {
+              "$ref": "common.schema.json#/$defs/uri"
+            }
+          }
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "controller_descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "controller_id",
+        "controller_version",
+        "machine_name",
+        "supported_protocol_versions",
+        "transport_profiles",
+        "runtime_adapters",
+        "capacity"
+      ],
+      "properties": {
+        "controller_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "controller_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "machine_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supported_protocol_versions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "contains": {
+            "const": "1.0"
+          },
+          "uniqueItems": true
+        },
+        "transport_profiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "https_long_poll",
+              "websocket",
+              "signalr",
+              "grpc_stream",
+              "broker"
+            ]
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "runtime_adapters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/runtime_adapter_summary"
+          },
+          "minItems": 1
+        },
+        "capacity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "max_runtimes",
+            "max_concurrent_invocations"
+          ],
+          "properties": {
+            "max_runtimes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_concurrent_invocations": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "runtime_adapter_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adapter_kind",
+        "adapter_version",
+        "protocol_versions",
+        "deployment_modes",
+        "capabilities",
+        "health"
+      ],
+      "properties": {
+        "adapter_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adapter_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "protocol_versions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "contains": {
+            "const": "1.0"
+          },
+          "uniqueItems": true
+        },
+        "deployment_modes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "capabilities": {
+          "$ref": "common.schema.json#/$defs/capability_values"
+        },
+        "health": {
+          "type": "string",
+          "enum": [
+            "healthy",
+            "degraded",
+            "unavailable"
+          ]
+        }
+      }
+    },
+    "controller_heartbeat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "controller_id",
+        "status",
+        "observed_at",
+        "active_command_ids",
+        "inventory"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "controller.heartbeat"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "controller_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "busy",
+            "degraded",
+            "draining"
+          ]
+        },
+        "observed_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "active_command_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "inventory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "runtimes"
+          ],
+          "properties": {
+            "runtimes": {
+              "type": "array",
+              "items": {
+                "$ref": "runtime-resources.schema.json#/$defs/runtime_resource"
+              }
+            },
+            "sessions": {
+              "type": "array",
+              "items": {
+                "$ref": "runtime-resources.schema.json#/$defs/agent_session_resource"
+              }
+            },
+            "interactions": {
+              "type": "array",
+              "items": {
+                "$ref": "runtime-resources.schema.json#/$defs/interaction_session"
+              }
+            }
+          }
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "controller_command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "command_id",
+        "command_type",
+        "idempotency_key",
+        "issued_at",
+        "target",
+        "correlation",
+        "authorization_context",
+        "execution"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "controller.command"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "command_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "command_type": {
+          "type": "string",
+          "enum": [
+            "PrepareAgentRuntime",
+            "StartAgentRuntime",
+            "StopAgentRuntime",
+            "PrepareInvocation",
+            "StartInvocation",
+            "SendInput",
+            "RequestSnapshot",
+            "PauseInvocation",
+            "ResumeInvocation",
+            "CancelInvocation",
+            "TerminateInvocation",
+            "RestoreSnapshot",
+            "InspectInvocation",
+            "CollectArtifacts",
+            "CreateAgentSession",
+            "CloseAgentSession",
+            "InspectAgentSession",
+            "SynchronizeSessionHistory",
+            "OpenInteractionSession",
+            "SendInteractionInput",
+            "AcknowledgeInteractionMessage",
+            "CloseInteractionSession"
+          ]
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "issued_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "available_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/resource_target"
+        },
+        "correlation": {
+          "$ref": "common.schema.json#/$defs/correlation"
+        },
+        "authorization_context": {
+          "$ref": "common.schema.json#/$defs/authorization_context"
+        },
+        "execution": {
+          "$ref": "#/$defs/command_execution"
+        },
+        "payload_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "payload": {
+          "type": "object"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      },
+      "not": {
+        "required": [
+          "payload_ref",
+          "payload"
+        ]
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "command_type": {
+                "const": "StartInvocation"
+              }
+            },
+            "required": [
+              "command_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/invocation_input"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command_type": {
+                "const": "OpenInteractionSession"
+              }
+            },
+            "required": [
+              "command_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/interaction_session"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command_type": {
+                "const": "SendInteractionInput"
+              }
+            },
+            "required": [
+              "command_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/interaction_message"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command_type": {
+                "const": "RequestSnapshot"
+              }
+            },
+            "required": [
+              "command_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/snapshot_request"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "command_execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deadline",
+        "heartbeat_interval"
+      ],
+      "properties": {
+        "deadline": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "heartbeat_interval": {
+          "$ref": "common.schema.json#/$defs/duration"
+        },
+        "lease": {
+          "$ref": "#/$defs/command_lease"
+        }
+      }
+    },
+    "command_lease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lease_id",
+        "controller_id",
+        "acquired_at",
+        "expires_at",
+        "attempt",
+        "fencing_token"
+      ],
+      "properties": {
+        "lease_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "controller_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "acquired_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fencing_token": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "command_acknowledgement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "acknowledgement_id",
+        "command_id",
+        "controller_id",
+        "status",
+        "acknowledged_at",
+        "correlation"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "controller.command_acknowledgement"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "acknowledgement_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "command_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "controller_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "received",
+            "accepted",
+            "rejected"
+          ]
+        },
+        "acknowledged_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "lease": {
+          "$ref": "#/$defs/command_lease"
+        },
+        "correlation": {
+          "$ref": "common.schema.json#/$defs/correlation"
+        },
+        "error": {
+          "$ref": "common.schema.json#/$defs/error_report"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "rejected"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          }
+        }
+      ]
+    },
+    "command_completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "completion_id",
+        "command_id",
+        "controller_id",
+        "delivery_status",
+        "completed_at",
+        "fencing_token",
+        "correlation"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "controller.command_completion"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "completion_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "command_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "controller_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "delivery_status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "completed_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "fencing_token": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "result_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "correlation": {
+          "$ref": "common.schema.json#/$defs/correlation"
+        },
+        "error": {
+          "$ref": "common.schema.json#/$defs/error_report"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "delivery_status": {
+                "const": "failed"
+              }
+            },
+            "required": [
+              "delivery_status"
+            ]
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          }
+        }
+      ]
+    },
+    "command_lease_renewal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "renewal_id",
+        "command_id",
+        "controller_id",
+        "lease_id",
+        "fencing_token",
+        "requested_expires_at",
+        "requested_at",
+        "correlation"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "controller.command_lease_renewal"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "renewal_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "command_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "controller_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "lease_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "fencing_token": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "requested_expires_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "requested_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "correlation": {
+          "$ref": "common.schema.json#/$defs/correlation"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "controller_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_type",
+        "protocol_version",
+        "schema_version",
+        "event_id",
+        "controller_id",
+        "event_type",
+        "aggregate",
+        "sequence",
+        "occurred_at",
+        "payload_schema_version",
+        "target",
+        "correlation"
+      ],
+      "properties": {
+        "message_type": {
+          "const": "controller.event"
+        },
+        "protocol_version": {
+          "$ref": "common.schema.json#/$defs/protocol_version"
+        },
+        "schema_version": {
+          "$ref": "common.schema.json#/$defs/schema_version"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "controller_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "ControllerCapabilityChanged",
+            "InvocationAccepted",
+            "InvocationRejected",
+            "InvocationStarted",
+            "Heartbeat",
+            "ProgressReported",
+            "ArtifactCreated",
+            "CapabilityRequested",
+            "SnapshotCaptureStarted",
+            "SnapshotSaved",
+            "SnapshotRejected",
+            "OutcomeReported",
+            "InvocationPaused",
+            "InvocationResumed",
+            "InvocationStopped",
+            "InvocationLost",
+            "AgentRuntimeReady",
+            "AgentRuntimeStopped",
+            "AgentRuntimeLost",
+            "AgentSessionCreated",
+            "AgentSessionClosed",
+            "AgentSessionHistorySynchronized",
+            "AgentSessionHistorySynchronizationFailed",
+            "InteractionRequested",
+            "InteractionSessionOpened",
+            "InteractionMessageReceived",
+            "InteractionMessageAcknowledged",
+            "InteractionSessionDisconnected",
+            "InteractionSessionClosed"
+          ]
+        },
+        "aggregate": {
+          "$ref": "common.schema.json#/$defs/aggregate_ref"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "occurred_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "payload_schema_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/resource_target"
+        },
+        "correlation": {
+          "$ref": "common.schema.json#/$defs/correlation"
+        },
+        "fencing_token": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "payload_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "payload": {
+          "type": "object"
+        },
+        "raw_event_ref": {
+          "$ref": "common.schema.json#/$defs/content_ref"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "payload_ref"
+          ]
+        },
+        {
+          "required": [
+            "payload"
+          ]
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "event_type": {
+                "const": "InteractionRequested"
+              }
+            },
+            "required": [
+              "event_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/interaction_request"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "event_type": {
+                "const": "InteractionMessageReceived"
+              }
+            },
+            "required": [
+              "event_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/interaction_message"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "event_type": {
+                "const": "AgentSessionHistorySynchronized"
+              }
+            },
+            "required": [
+              "event_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/transcript_snapshot"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "event_type": {
+                "const": "SnapshotSaved"
+              }
+            },
+            "required": [
+              "event_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/snapshot_descriptor"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "event_type": {
+                "const": "OutcomeReported"
+              }
+            },
+            "required": [
+              "event_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "common.schema.json#/$defs/outcome"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

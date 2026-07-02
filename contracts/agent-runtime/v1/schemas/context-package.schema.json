@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tradecraft.dev/agent-runtime/v1/context-package.schema.json",
+  "title": "Immutable Context Package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context_package_id",
+    "version",
+    "created_at",
+    "items",
+    "integrity"
+  ],
+  "properties": {
+    "context_package_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/context_item"
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "digest"
+      ],
+      "properties": {
+        "digest": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        },
+        "signature_ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        }
+      }
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "$defs": {
+    "context_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "ref"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "task_description",
+            "requirement",
+            "decision_record",
+            "repository_slice",
+            "source_file",
+            "design_document",
+            "prior_artifact",
+            "prior_run_summary",
+            "human_instruction",
+            "policy",
+            "memory_record",
+            "external_knowledge",
+            "dependency_manifest",
+            "evaluation_criteria"
+          ]
+        },
+        "ref": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "digest": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        },
+        "required": {
+          "type": "boolean",
+          "default": true
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

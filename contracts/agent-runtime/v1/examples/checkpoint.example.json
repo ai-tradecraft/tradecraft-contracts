@@ -1,0 +1,39 @@
+{
+  "document_type": "checkpoint",
+  "checkpoint_id": "checkpoint_7",
+  "workflow_position": {
+    "run_id": "run_123",
+    "branch_id": "main",
+    "phase_id": "implementation",
+    "step_id": "complete",
+    "attempt_id": "attempt_3"
+  },
+  "snapshot_refs": [
+    "snapshot://snapshot_42"
+  ],
+  "verification": {
+    "status": "passed",
+    "gate_decisions": [
+      {
+        "gate_id": "build",
+        "status": "approved",
+        "evidence_refs": [
+          "test-result://build/991"
+        ]
+      },
+      {
+        "gate_id": "tests",
+        "status": "approved",
+        "evidence_refs": [
+          "test-result://tests/992"
+        ]
+      }
+    ]
+  },
+  "captured_through_event_sequence": 482,
+  "resume_at": {
+    "phase_id": "review"
+  },
+  "committed_at": "2026-07-01T01:24:00Z",
+  "accepted_by": "system://tradecraft-orchestrator"
+}

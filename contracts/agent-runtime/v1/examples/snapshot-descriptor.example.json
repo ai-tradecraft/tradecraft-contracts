@@ -1,0 +1,45 @@
+{
+  "document_type": "snapshot_descriptor",
+  "snapshot_id": "snapshot_42",
+  "target": {
+    "controller_id": "controller_local_1",
+    "runtime_id": "runtime_123",
+    "agent_session_id": "session_456",
+    "invocation_id": "inv_913"
+  },
+  "created_at": "2026-07-01T01:21:00Z",
+  "purpose": "checkpoint_candidate",
+  "requested_by": "agent",
+  "requested_by_ref": "agent-session://session_456",
+  "trigger": "implementation_complete",
+  "consistency": "quiesced",
+  "contents": [
+    "workspace",
+    "transcript",
+    "restore_recipe"
+  ],
+  "resumability_mode": "reconstructed",
+  "portable": true,
+  "capture_watermark": {
+    "controller_event_sequence": 482,
+    "command_id": "cmd_712",
+    "fencing_token": 19,
+    "workspace_revision": "git:4e8125d",
+    "provider_session_revision": "opencode:session_456:37"
+  },
+  "side_effect_state": "reconciled",
+  "retention": {
+    "class": "candidate",
+    "expires_at": "2026-07-08T01:21:00Z"
+  },
+  "checkpoint_candidate": true,
+  "content_ref": {
+    "uri": "asset://snapshot-manifests/snapshot_42",
+    "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+    "content_type": "application/vnd.tradecraft.snapshot-manifest+json",
+    "length": 13216,
+    "schema_ref": "https://schemas.tradecraft.dev/agent-runtime/v1/runtime-resources.schema.json#/$defs/snapshot_manifest"
+  },
+  "adapter_kind": "opencode",
+  "adapter_version": "1.0.0"
+}

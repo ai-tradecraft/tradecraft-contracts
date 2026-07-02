@@ -1,0 +1,18 @@
+{
+  "message_type": "controller.command_lease_renewal",
+  "protocol_version": "1.0",
+  "schema_version": "1.0",
+  "renewal_id": "renewal_20",
+  "command_id": "cmd_712",
+  "controller_id": "controller_local_1",
+  "lease_id": "lease_19",
+  "fencing_token": 19,
+  "requested_expires_at": "2026-07-01T01:13:00Z",
+  "requested_at": "2026-07-01T01:07:30Z",
+  "correlation": {
+    "command_id": "cmd_712",
+    "correlation_id": "corr_123",
+    "run_id": "run_123",
+    "invocation_id": "inv_913"
+  }
+}

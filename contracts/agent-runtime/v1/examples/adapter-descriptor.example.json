@@ -1,0 +1,61 @@
+{
+  "message_type": "adapter.descriptor",
+  "protocol_version": "1.0",
+  "schema_version": "1.0",
+  "adapter_kind": "opencode",
+  "adapter_version": "0.1.0",
+  "deployment_modes": [
+    "local_process",
+    "local_container",
+    "remote_container"
+  ],
+  "capabilities": {
+    "persistent_runtime": true,
+    "persistent_sessions": true,
+    "concurrent_sessions": true,
+    "streaming_output": true,
+    "synchronous_interaction": true,
+    "agent_initiated_interaction": true,
+    "pause_resume": false,
+    "snapshot_capture": true,
+    "agent_suggested_snapshots": true,
+    "exact_snapshot_restore": false,
+    "reconstructed_restore": true,
+    "snapshot_consistency_modes": [
+      "quiesced",
+      "crash_consistent"
+    ],
+    "snapshot_transfer_profiles": [
+      "controller_mediated",
+      "delegated_direct_upload",
+      "local_content_handle"
+    ],
+    "document_publication_source": true,
+    "artifact_collection": true,
+    "transcript_read": true,
+    "transcript_source_ids": true
+  },
+  "limits": {
+    "max_concurrent_runtimes": 4,
+    "max_concurrent_sessions_per_runtime": 8,
+    "max_concurrent_invocations_per_runtime": 1,
+    "max_interaction_message_bytes": 1048576
+  },
+  "config_schema": "adapter-schema://opencode/1.0",
+  "package": {
+    "package_ref": "package://lamplighter-opencode/0.1.0",
+    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "signature_ref": "signature://lamplighter-opencode/0.1.0",
+    "trust_policy_ref": "policy://adapter-packages/default"
+  },
+  "composition": {
+    "backend": {
+      "kind": "opencode",
+      "version": "0.1.0"
+    },
+    "execution_environment": {
+      "kind": "local_process",
+      "version": "1.0.0"
+    }
+  }
+}

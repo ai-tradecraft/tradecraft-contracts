@@ -1,0 +1,48 @@
+{
+  "message_type": "controller.registration",
+  "protocol_version": "1.0",
+  "schema_version": "1.0",
+  "registration_id": "registration_123",
+  "controller": {
+    "controller_id": "controller_local_1",
+    "controller_version": "0.1.0",
+    "machine_name": "developer-mac",
+    "supported_protocol_versions": [
+      "1.0"
+    ],
+    "transport_profiles": [
+      "https_long_poll",
+      "websocket"
+    ],
+    "runtime_adapters": [
+      {
+        "adapter_kind": "opencode",
+        "adapter_version": "0.1.0",
+        "protocol_versions": [
+          "1.0"
+        ],
+        "deployment_modes": [
+          "local_process"
+        ],
+        "capabilities": {
+          "persistent_sessions": true,
+          "streaming_output": true,
+          "synchronous_interaction": true,
+          "transcript_read": true
+        },
+        "health": "healthy"
+      }
+    ],
+    "capacity": {
+      "max_runtimes": 4,
+      "max_concurrent_invocations": 2
+    }
+  },
+  "registered_at": "2026-07-01T01:02:00Z",
+  "authorization_context": {
+    "subject_ref": "controller-identity://controller_local_1",
+    "grant_ref": "authorization-grant://controller/controller_local_1",
+    "issued_at": "2026-07-01T01:00:00Z",
+    "expires_at": "2026-07-01T09:00:00Z"
+  }
+}

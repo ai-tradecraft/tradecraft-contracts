@@ -1,0 +1,102 @@
+{
+  "examples": [
+    {
+      "file": "workflow-definition.example.json",
+      "schema": "workflow-definition.schema.json"
+    },
+    {
+      "file": "context-package.example.json",
+      "schema": "context-package.schema.json"
+    },
+    {
+      "file": "resolved-agent-spec.example.json",
+      "schema": "resolved-agent-spec.schema.json"
+    },
+    {
+      "file": "controller-registration.example.json",
+      "schema": "controller-message.schema.json"
+    },
+    {
+      "file": "controller-command.example.json",
+      "schema": "controller-message.schema.json"
+    },
+    {
+      "file": "controller-lease-renewal.example.json",
+      "schema": "controller-message.schema.json"
+    },
+    {
+      "file": "controller-interaction-event.example.json",
+      "schema": "controller-message.schema.json"
+    },
+    {
+      "file": "interaction-session.example.json",
+      "schema": "runtime-resources.schema.json"
+    },
+    {
+      "file": "transcript-snapshot.example.json",
+      "schema": "runtime-resources.schema.json"
+    },
+    {
+      "file": "snapshot-request.example.json",
+      "schema": "runtime-resources.schema.json"
+    },
+    {
+      "file": "snapshot-manifest.example.json",
+      "schema": "runtime-resources.schema.json"
+    },
+    {
+      "file": "snapshot-descriptor.example.json",
+      "schema": "runtime-resources.schema.json"
+    },
+    {
+      "file": "checkpoint.example.json",
+      "schema": "runtime-resources.schema.json"
+    },
+    {
+      "file": "document-publication-request.example.json",
+      "schema": "runtime-resources.schema.json"
+    },
+    {
+      "file": "document-publication-result.example.json",
+      "schema": "runtime-resources.schema.json"
+    },
+    {
+      "file": "adapter-descriptor.example.json",
+      "schema": "runtime-adapter-message.schema.json"
+    },
+    {
+      "file": "adapter-operation.example.json",
+      "schema": "runtime-adapter-message.schema.json"
+    },
+    {
+      "file": "adapter-event.example.json",
+      "schema": "runtime-adapter-message.schema.json"
+    },
+    {
+      "file": "blocked-outcome.example.json",
+      "schema": "common.schema.json",
+      "definition": "outcome"
+    },
+    {
+      "file": "invalid-controller-command.example.json",
+      "schema": "controller-message.schema.json",
+      "valid": false
+    },
+    {
+      "file": "invalid-interaction-message.example.json",
+      "schema": "runtime-resources.schema.json",
+      "valid": false
+    },
+    {
+      "file": "invalid-checkpoint.example.json",
+      "schema": "runtime-resources.schema.json",
+      "valid": false
+    },
+    {
+      "file": "invalid-blocked-outcome.example.json",
+      "schema": "common.schema.json",
+      "definition": "outcome",
+      "valid": false
+    }
+  ]
+}

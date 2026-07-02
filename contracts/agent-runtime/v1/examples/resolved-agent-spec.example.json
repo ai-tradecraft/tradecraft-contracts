@@ -1,0 +1,97 @@
+{
+  "agent_spec_id": "agent_spec_913",
+  "version": 1,
+  "resolved_at": "2026-07-01T01:01:00Z",
+  "template_ref": "agent-template://implementation-engineer/v3",
+  "role": "implementation_engineer",
+  "objective": {
+    "description": "Implement the approved authentication changes.",
+    "success_criteria": [
+      "All required tests pass.",
+      "Backward compatibility is preserved."
+    ]
+  },
+  "capabilities": {
+    "required": [
+      "repository.read",
+      "repository.write",
+      "shell.execute",
+      "tests.execute"
+    ],
+    "optional": [
+      "github.pull_request.write"
+    ]
+  },
+  "skills": [
+    {
+      "id": "dotnet-development",
+      "version": "1.0.0"
+    }
+  ],
+  "mcps": [
+    {
+      "id": "github",
+      "permissions": [
+        "repository.read",
+        "pull_request.read"
+      ],
+      "configuration_ref": "mcp-config://github/read-only"
+    }
+  ],
+  "context_package_ref": "context://packages/ctx_123/v7",
+  "workspace": {
+    "source": {
+      "type": "git",
+      "repository": "example/service",
+      "revision": "feature/auth"
+    },
+    "isolation": "container",
+    "write_policy": "read_write",
+    "allowed_paths": [
+      "src",
+      "tests"
+    ]
+  },
+  "policies": {
+    "network": "restricted",
+    "destructive_actions": "require_approval",
+    "secret_access": "explicit"
+  },
+  "completion_contract": {
+    "accepted_outcome_kinds": [
+      "completed",
+      "completed_with_warnings",
+      "blocked",
+      "needs_input"
+    ],
+    "required_outputs": [
+      "implementation_summary",
+      "changed_files",
+      "test_results",
+      "residual_risks"
+    ],
+    "required_evidence_types": [
+      "test_result"
+    ],
+    "minimum_confidence": 0.8,
+    "residual_risk_required": true
+  },
+  "runtime_requirements": {
+    "allowed_adapter_kinds": [
+      "opencode"
+    ],
+    "allowed_deployment_modes": [
+      "local_process",
+      "local_container"
+    ],
+    "required_adapter_capabilities": {
+      "required": [
+        "persistent_sessions",
+        "synchronous_interaction"
+      ]
+    }
+  },
+  "integrity": {
+    "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "document_type": "checkpoint",
+  "checkpoint_id": "checkpoint_failed",
+  "workflow_position": {
+    "run_id": "run_123",
+    "branch_id": "main",
+    "phase_id": "implementation"
+  },
+  "snapshot_refs": [
+    "snapshot://snapshot_42"
+  ],
+  "verification": {
+    "status": "failed",
+    "gate_decisions": [
+      {
+        "gate_id": "tests",
+        "status": "rejected",
+        "evidence_refs": [
+          "test-result://tests/failed"
+        ]
+      }
+    ]
+  },
+  "captured_through_event_sequence": 482,
+  "committed_at": "2026-07-01T01:24:00Z",
+  "accepted_by": "system://tradecraft-orchestrator"
+}
