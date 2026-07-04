@@ -489,7 +489,8 @@
             "CreateSnapshot",
             "RestoreSnapshot",
             "CollectArtifacts",
-            "CollectDiagnostics"
+            "CollectDiagnostics",
+            "PublishDocument"
           ]
         },
         "idempotency_key": {
@@ -602,6 +603,25 @@
             "properties": {
               "payload": {
                 "$ref": "runtime-resources.schema.json#/$defs/adapter_event_replay_request"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation_type": {
+                "const": "PublishDocument"
+              }
+            },
+            "required": [
+              "operation_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/document_publication_request"
               }
             }
           }

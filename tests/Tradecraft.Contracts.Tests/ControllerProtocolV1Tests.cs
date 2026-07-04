@@ -245,6 +245,49 @@ public sealed class ControllerProtocolV1Tests
         Assert.Equal("completed", adapterEvent.Payload?.GetProperty("kind").GetString());
     }
 
+    [Fact]
+    public void Serialize_WhenDocumentPublicationIsRequested_ThenPreservesPublicationSourceAndResult()
+    {
+        // Arrange
+        var request = new DocumentPublicationRequest(
+            DocumentType: "document_publication_request",
+            PublicationId: "publication_91",
+            Source: new DocumentPublicationSource(WorkspacePath: "docs/architecture.md"),
+            LogicalPath: "design/architecture.md",
+            Title: "Runtime Architecture",
+            MediaType: "text/markdown",
+            VersionIntent: "minor",
+            IdempotencyKey: "inv_913:publish:architecture",
+            Target: new ResourceTarget(
+                RuntimeId: "runtime_123",
+                AgentSessionId: "session_456",
+                InvocationId: "inv_913"),
+            Correlation: new ProtocolCorrelation(CorrelationId: "corr_123", InvocationId: "inv_913"),
+            ExpectedVersion: "1.2.0");
+        var result = new DocumentPublicationResult(
+            DocumentType: "document_publication_result",
+            PublicationId: "publication_91",
+            DocumentRef: "document://tradecraft/design/architecture",
+            VersionRef: "document-version://architecture/1.3.0",
+            ContentRef: new ContentReference(
+                Uri: "asset://documents/architecture/versions/1.3.0",
+                Sha256: new string('5', 64),
+                ContentType: "text/markdown",
+                Length: 12480),
+            Created: true,
+            PublishedAt: DateTimeOffset.Parse("2026-07-01T01:22:00Z"));
+
+        // Act
+        var requestJson = JsonSerializer.Serialize(request, ControllerProtocolJson.Options);
+        var resultJson = JsonSerializer.Serialize(result, ControllerProtocolJson.Options);
+
+        // Assert
+        Assert.Contains("\"workspace_path\": \"docs/architecture.md\"", requestJson);
+        Assert.Contains("\"version_intent\": \"minor\"", requestJson);
+        Assert.Contains("\"document_ref\": \"document://tradecraft/design/architecture\"", resultJson);
+        Assert.Contains("\"content_ref\"", resultJson);
+    }
+
     private static ControllerCommand CreateCommand()
     {
         return new ControllerCommand(
