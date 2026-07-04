@@ -189,6 +189,62 @@ public sealed class ControllerProtocolV1Tests
         Assert.Equal(4, roundTrip?.LastControllerSequence);
     }
 
+    [Fact]
+    public void Serialize_WhenAdapterEventBatchIsReplayed_ThenPreservesAdapterEventEnvelope()
+    {
+        // Arrange
+        using var payload = JsonDocument.Parse("""{"kind":"completed","summary":"Done."}""");
+        var batch = new AdapterEventBatch(
+            DocumentType: "adapter_event_batch",
+            AdapterKind: "opencode",
+            AdapterVersion: "0.1.0",
+            FromSequence: 7,
+            ThroughSequence: 7,
+            NextSequence: 8,
+            Events:
+            [
+                new AdapterEvent(
+                    MessageType: "adapter.event",
+                    ProtocolVersion: ControllerProtocolVersions.Protocol,
+                    SchemaVersion: ControllerProtocolVersions.Schema,
+                    EventId: "event_7",
+                    AdapterKind: "opencode",
+                    AdapterVersion: "0.1.0",
+                    EventType: "invocation.outcome_reported",
+                    Aggregate: new AggregateReference("invocation", "inv_913"),
+                    Sequence: 7,
+                    OccurredAt: DateTimeOffset.Parse("2026-07-01T01:12:00Z"),
+                    PayloadSchemaVersion: ControllerProtocolVersions.Schema,
+                    Target: new ResourceTarget(
+                        RuntimeId: "runtime_123",
+                        AgentSessionId: "session_456",
+                        InvocationId: "inv_913"),
+                    Correlation: new ProtocolCorrelation(
+                        CommandId: "cmd_712",
+                        CorrelationId: "corr_123",
+                        InvocationId: "inv_913"),
+                    Payload: payload.RootElement.Clone())
+            ],
+            Exhausted: true,
+            GeneratedAt: DateTimeOffset.Parse("2026-07-01T01:12:01Z"));
+
+        // Act
+        var json = JsonSerializer.Serialize(batch, ControllerProtocolJson.Options);
+        var roundTrip = JsonSerializer.Deserialize<AdapterEventBatch>(
+            json,
+            ControllerProtocolJson.Options);
+
+        // Assert
+        Assert.NotNull(roundTrip);
+        Assert.Equal("adapter_event_batch", roundTrip.DocumentType);
+        Assert.Equal(8, roundTrip.NextSequence);
+        var adapterEvent = Assert.Single(roundTrip.Events);
+        Assert.Equal("adapter.event", adapterEvent.MessageType);
+        Assert.Equal("invocation.outcome_reported", adapterEvent.EventType);
+        Assert.Equal("inv_913", adapterEvent.Target.InvocationId);
+        Assert.Equal("completed", adapterEvent.Payload?.GetProperty("kind").GetString());
+    }
+
     private static ControllerCommand CreateCommand()
     {
         return new ControllerCommand(

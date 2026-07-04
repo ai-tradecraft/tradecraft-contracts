@@ -466,6 +466,7 @@
             "PrepareRuntime",
             "StartRuntime",
             "InspectRuntime",
+            "ReadEvents",
             "StopRuntime",
             "TerminateRuntime",
             "ReconcileRuntime",
@@ -582,6 +583,25 @@
             "properties": {
               "payload": {
                 "$ref": "runtime-resources.schema.json#/$defs/interaction_message"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation_type": {
+                "const": "ReadEvents"
+              }
+            },
+            "required": [
+              "operation_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "runtime-resources.schema.json#/$defs/adapter_event_replay_request"
               }
             }
           }

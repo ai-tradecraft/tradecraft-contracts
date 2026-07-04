@@ -73,6 +73,10 @@
       "schema": "runtime-adapter-message.schema.json"
     },
     {
+      "file": "adapter-event-batch.example.json",
+      "schema": "runtime-resources.schema.json"
+    },
+    {
       "file": "blocked-outcome.example.json",
       "schema": "common.schema.json",
       "definition": "outcome"

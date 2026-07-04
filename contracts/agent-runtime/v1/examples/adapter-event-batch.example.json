@@ -1,0 +1,46 @@
+{
+  "document_type": "adapter_event_batch",
+  "adapter_kind": "opencode",
+  "adapter_version": "0.1.0",
+  "from_sequence": 14,
+  "through_sequence": 14,
+  "next_sequence": 15,
+  "events": [
+    {
+      "message_type": "adapter.event",
+      "protocol_version": "1.0",
+      "schema_version": "1.0",
+      "event_id": "adapter_event_899",
+      "adapter_kind": "opencode",
+      "adapter_version": "0.1.0",
+      "event_type": "invocation.outcome_reported",
+      "aggregate": {
+        "type": "invocation",
+        "id": "inv_913"
+      },
+      "sequence": 14,
+      "occurred_at": "2026-07-01T01:12:00Z",
+      "payload_schema_version": "1.0",
+      "target": {
+        "runtime_id": "runtime_123",
+        "agent_session_id": "session_456",
+        "invocation_id": "inv_913"
+      },
+      "correlation": {
+        "command_id": "cmd_712",
+        "correlation_id": "corr_123",
+        "run_id": "run_123",
+        "branch_id": "main",
+        "step_id": "implement",
+        "attempt_id": "attempt_3",
+        "invocation_id": "inv_913"
+      },
+      "payload": {
+        "kind": "completed",
+        "summary": "Invocation completed."
+      }
+    }
+  ],
+  "exhausted": true,
+  "generated_at": "2026-07-01T01:12:01Z"
+}

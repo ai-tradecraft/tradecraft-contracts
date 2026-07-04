@@ -13,6 +13,12 @@
       "$ref": "#/$defs/invocation_input"
     },
     {
+      "$ref": "#/$defs/adapter_event_replay_request"
+    },
+    {
+      "$ref": "#/$defs/adapter_event_batch"
+    },
+    {
       "$ref": "#/$defs/interaction_session"
     },
     {
@@ -335,6 +341,86 @@
         },
         "left_at": {
           "$ref": "common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "adapter_event_replay_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "from_sequence"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "adapter_event_replay_request"
+        },
+        "from_sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_events": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
+        }
+      }
+    },
+    "adapter_event_batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "adapter_kind",
+        "adapter_version",
+        "from_sequence",
+        "through_sequence",
+        "next_sequence",
+        "events",
+        "exhausted",
+        "generated_at"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "adapter_event_batch"
+        },
+        "adapter_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adapter_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from_sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "through_sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "next_sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "runtime-adapter-message.schema.json#/$defs/adapter_event"
+          }
+        },
+        "exhausted": {
+          "type": "boolean"
+        },
+        "generated_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "extensions": {
+          "$ref": "common.schema.json#/$defs/extensions"
         }
       }
     },
