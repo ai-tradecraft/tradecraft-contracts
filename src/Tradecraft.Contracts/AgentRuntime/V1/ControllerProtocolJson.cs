@@ -187,8 +187,26 @@ public static class ControllerEventTypes
     /// <summary>An interaction message was received.</summary>
     public const string InteractionMessageReceived = "InteractionMessageReceived";
 
+    /// <summary>An interaction message was acknowledged.</summary>
+    public const string InteractionMessageAcknowledged = "InteractionMessageAcknowledged";
+
     /// <summary>An interaction session closed.</summary>
     public const string InteractionSessionClosed = "InteractionSessionClosed";
+
+    /// <summary>A runtime snapshot was suggested by the agent or adapter.</summary>
+    public const string SnapshotSuggested = "SnapshotSuggested";
+
+    /// <summary>A runtime snapshot capture started.</summary>
+    public const string SnapshotCaptureStarted = "SnapshotCaptureStarted";
+
+    /// <summary>A runtime snapshot became available for transfer.</summary>
+    public const string SnapshotContentReady = "SnapshotContentReady";
+
+    /// <summary>A runtime snapshot capture failed.</summary>
+    public const string SnapshotCaptureFailed = "SnapshotCaptureFailed";
+
+    /// <summary>A document publication was requested by the agent or adapter.</summary>
+    public const string DocumentPublicationRequested = "DocumentPublicationRequested";
 }
 
 /// <summary>Defines stable POC error classifications within the v1 taxonomy.</summary>
